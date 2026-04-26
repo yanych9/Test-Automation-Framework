@@ -1,0 +1,104 @@
+- case_id: DP_001
+  case_name: "疾病风险预测-正常输入"
+  method: POST
+  path: "/api/v1/predict/disease-risk"
+  request:
+    patient_id: "TEST_P001"
+    age: 58
+    gender: "male"
+    diagnosis_history:
+      - "hypertension"
+    lab_tests:
+      glucose: 8.2
+      hba1c: 6.9
+      cholesterol: 5.8
+    vital_signs:
+      systolic_bp: 145
+      diastolic_bp: 92
+      heart_rate: 86
+  expected:
+    status_code: 200
+    required_fields:
+      - "request_id"
+      - "model_name"
+      - "model_version"
+      - "result.risk_level"
+      - "result.probability"
+    probability_path: "result.probability"
+    probability_range: [0, 1]
+    risk_level_path: "result.risk_level"
+    allowed_risk_levels: ["low", "medium", "high"]
+
+- case_id: DP_002
+  case_name: "疾病风险预测-缺失年龄字段"
+  method: POST
+  path: "/api/v1/predict/disease-risk"
+  request:
+    patient_id: "TEST_P002"
+    gender: "female"
+    diagnosis_history:
+      - "diabetes"
+    lab_tests:
+      glucose: 9.1
+      hba1c: 7.4
+    vital_signs:
+      systolic_bp: 138
+      diastolic_bp: 88
+      heart_rate: 80
+  expected:
+    status_code: 400
+    required_fields:
+      - "error_code"
+      - "message"
+    message_contains: "age"
+
+- case_id: DP_003
+  case_name: "疾病风险预测-年龄字段类型错误"
+  method: POST
+  path: "/api/v1/predict/disease-risk"
+  request:
+    patient_id: "TEST_P003"
+    age: "unknown"
+    gender: "male"
+    lab_tests:
+      glucose: 7.8
+      hba1c: 6.5
+    vital_signs:
+      systolic_bp: 130
+      diastolic_bp: 85
+      heart_rate: 78
+  expected:
+    status_code: 400
+    required_fields:
+      - "error_code"
+      - "message"
+    message_contains: "age"
+
+- case_id: DP_004
+  case_name: "疾病风险预测-边界年龄输入"
+  method: POST
+  path: "/api/v1/predict/disease-risk"
+  request:
+    patient_id: "TEST_P004"
+    age: 120
+    gender: "female"
+    diagnosis_history: []
+    lab_tests:
+      glucose: 5.6
+      hba1c: 5.8
+      cholesterol: 4.9
+    vital_signs:
+      systolic_bp: 128
+      diastolic_bp: 82
+      heart_rate: 72
+  expected:
+    status_code: 200
+    required_fields:
+      - "request_id"
+      - "model_version"
+      - "result.risk_level"
+      - "result.probability"
+    probability_path: "result.probability"
+    probability_range: [0, 1]
+    risk_level_path: "result.risk_level"
+    allowed_risk_levels: ["low", "medium", "high"]
