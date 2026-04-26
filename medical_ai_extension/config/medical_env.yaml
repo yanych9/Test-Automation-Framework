@@ -1,0 +1,40 @@
+env: local
+
+service:
+  base_url: "http://127.0.0.1:8000"
+  timeout: 5
+  default_headers:
+    Content-Type: "application/json"
+
+model:
+  expected_model_name: "disease-risk-demo"
+  allowed_risk_levels:
+    - low
+    - medium
+    - high
+
+# 以下数据源配置用于展示医疗多源数据测试设计。
+# 面试时可说明：当前为示例配置，不连接真实医院生产数据。
+datasources:
+  mysql:
+    description: "结构化临床表型数据，如患者基本信息、检验指标、诊断编码"
+    host: "127.0.0.1"
+    port: 3306
+    database: "medical_test"
+    user: "root"
+    password: "password"
+  mongodb:
+    description: "非结构化或半结构化病历文本、影像报告文本"
+    uri: "mongodb://127.0.0.1:27017"
+    database: "medical_text_test"
+  redis:
+    description: "热点特征、模型配置、token、任务状态等缓存"
+    host: "127.0.0.1"
+    port: 6379
+    db: 0
+    test_key_prefix: "test:medical:"
+  clickhouse:
+    description: "大规模时序特征、生命体征分析宽表、ETL 结果表"
+    host: "127.0.0.1"
+    port: 9000
+    database: "medical_signal_test"
